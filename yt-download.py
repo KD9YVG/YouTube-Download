@@ -1,5 +1,6 @@
 import tkinter as tk
 import os
+from tkinter import messagebox
 
 root = tk.Tk()
 root.title("Youtube Downloader")
@@ -15,9 +16,11 @@ url_entry.pack(pady=5)
 
 def download_action():
     url = url_entry.get()
+    if not url.strip():
+        messagebox.showerror("Error", "URL field cannot be empty.")
+        return
     os.system('cd / && cd Users/southbrookkids/Desktop/New Assets')
     os.system(f'yt-dlp -f mp4 "{url}"')
-    # Add your download logic here
 
 # Download button
 download_button = tk.Button(root, text="Download", command=download_action)
