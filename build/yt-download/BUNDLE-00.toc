@@ -1,0 +1,3 @@
+([('yt-download',
+   '/Users/brayden/Desktop/Projects/YouTube Download/dist/yt-download',
+   'EXECUTABLE')],)
