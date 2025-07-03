@@ -1,9 +1,6 @@
-
 import tkinter as tk
 import os
 from tkinter import messagebox
-
-
 
 root = tk.Tk()
 root.title("Youtube Downloader")
@@ -11,10 +8,6 @@ root.geometry("600x500")
 
 # Output path variable (set by user)
 OUTPUT_PATH = tk.StringVar(value='/Users/brayden/Desktop')
-
-
-
-
 
 # Try to detect dark mode (macOS)
 import platform
@@ -31,12 +24,6 @@ def is_dark_mode():
     return False
 
 dark_mode = is_dark_mode()
-
-
-
-
-
-
 
 # Output path label and entry
 output_path_label = tk.Label(root, text="Output Folder:")
@@ -137,4 +124,3 @@ download_button = tk.Button(
 download_button.pack(pady=20)
 
 root.mainloop()
-
