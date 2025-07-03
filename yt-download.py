@@ -6,8 +6,22 @@ root = tk.Tk()
 root.title("Youtube Downloader")
 root.geometry("600x500")
 
-# Output path variable (set by user)
-OUTPUT_PATH = tk.StringVar(value='/Users/brayden/Desktop')
+
+# Path to store the last used output directory
+LAST_PATH_FILE = os.path.expanduser('~/.yt_downloader_last_path')
+
+# Load last used path if it exists
+def load_last_path():
+    try:
+        with open(LAST_PATH_FILE, 'r') as f:
+            path = f.read().strip()
+            if os.path.isdir(path):
+                return path
+    except Exception:
+        pass
+    return ''
+
+OUTPUT_PATH = tk.StringVar(value=load_last_path())
 
 # Try to detect dark mode (macOS)
 import platform
@@ -34,9 +48,14 @@ output_path_entry.pack(pady=2)
 # Browse button for output path
 from tkinter import filedialog
 def browse_output_path():
-    folder_selected = filedialog.askdirectory(initialdir=OUTPUT_PATH.get(), title="Select Output Folder")
+    folder_selected = filedialog.askdirectory(initialdir=OUTPUT_PATH.get() or os.path.expanduser('~'), title="Select Output Folder")
     if folder_selected:
         OUTPUT_PATH.set(folder_selected)
+        try:
+            with open(LAST_PATH_FILE, 'w') as f:
+                f.write(folder_selected)
+        except Exception:
+            pass
 browse_button = tk.Button(root, text="Browse", command=browse_output_path)
 browse_button.pack(pady=(0, 10))
 
@@ -61,6 +80,12 @@ output_text.pack(pady=10)
 import subprocess
 
 def download_action():
+    # Save the output path for next time
+    try:
+        with open(LAST_PATH_FILE, 'w') as f:
+            f.write(OUTPUT_PATH.get())
+    except Exception:
+        pass
     url = url_entry.get()
     filename = filename_entry.get().strip()
     if not url.strip():
