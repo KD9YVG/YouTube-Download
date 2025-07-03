@@ -3,14 +3,18 @@ import tkinter as tk
 import os
 from tkinter import messagebox
 
-# Set the output path here
-OUTPUT_PATH = '/Users/brayden/Desktop'
 
 
 root = tk.Tk()
 root.title("Youtube Downloader")
-root.geometry("600x400")
-## Output path on line 77 "cwd"
+root.geometry("600x500")
+
+# Output path variable (set by user)
+OUTPUT_PATH = tk.StringVar(value='/Users/brayden/Desktop')
+
+
+
+
 
 # Try to detect dark mode (macOS)
 import platform
@@ -33,14 +37,29 @@ dark_mode = is_dark_mode()
 
 
 
+
+# Output path label and entry
+output_path_label = tk.Label(root, text="Output Folder:")
+output_path_label.pack(pady=(15, 2))
+output_path_entry = tk.Entry(root, width=60, textvariable=OUTPUT_PATH)
+output_path_entry.pack(pady=2)
+
+# Browse button for output path
+from tkinter import filedialog
+def browse_output_path():
+    folder_selected = filedialog.askdirectory(initialdir=OUTPUT_PATH.get(), title="Select Output Folder")
+    if folder_selected:
+        OUTPUT_PATH.set(folder_selected)
+browse_button = tk.Button(root, text="Browse", command=browse_output_path)
+browse_button.pack(pady=(0, 10))
+
 # URL label
 url_label = tk.Label(root, text="URL:")
-url_label.pack(pady=(20, 5))
+url_label.pack(pady=(5, 5))
 
 # URL entry field
 url_entry = tk.Entry(root, width=60)
 url_entry.pack(pady=5)
-
 
 # File name label and entry
 filename_label = tk.Label(root, text="File Name:")
@@ -73,12 +92,13 @@ def download_action():
         get_name_cmd = [
             'yt-dlp', '--get-filename', '-f', 'mp4', '-o', '%(title)s.%(ext)s', url
         ]
-        result = subprocess.run(get_name_cmd, cwd=OUTPUT_PATH, capture_output=True, text=True)
+        output_dir = OUTPUT_PATH.get()
+        result = subprocess.run(get_name_cmd, cwd=output_dir, capture_output=True, text=True)
         original_name = result.stdout.strip().split('\n')[-1]
         # Download the video
         process = subprocess.Popen(
             ['yt-dlp', '-f', 'mp4', '-o', '%(title)s.%(ext)s', url],
-            cwd=OUTPUT_PATH,
+            cwd=output_dir,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True
@@ -91,9 +111,9 @@ def download_action():
         process.wait()
         # Rename the file
         import pathlib
-        src = pathlib.Path(OUTPUT_PATH) / original_name
+        src = pathlib.Path(output_dir) / original_name
         ext = src.suffix
-        dst = pathlib.Path(OUTPUT_PATH) / (filename + ext)
+        dst = pathlib.Path(output_dir) / (filename + ext)
         if src.exists():
             src.rename(dst)
             output_text.config(state='normal')
